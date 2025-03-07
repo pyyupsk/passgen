@@ -27,19 +27,18 @@ import { useToast } from '@/components/ui/toast/use-toast'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
+import { useClipboard } from '@vueuse/core'
 import { Check, Copy, RefreshCw } from 'lucide-vue-next'
 import { ref, computed, watchEffect, onMounted } from 'vue'
 
 const { toast } = useToast()
+const { copy, copied } = useClipboard()
 
 // The password to be generated
 const password = ref<string>('')
 
 // Using a single number rather than an array for better performance
 const passwordLength = ref<number>(16)
-
-// Whether the password has been copied to the clipboard
-const copied = ref<boolean>(false)
 
 // The character set to use when generating the password
 const characters = ref<CharacterSet>({
@@ -79,19 +78,12 @@ const handleGenerate = () => {
   password.value = generatePassword(passwordLength.value, characters.value)
 }
 
-// Copy the password to the clipboard
-const copyToClipboard = () => {
+// Copy the password to the clipboard using VueUse
+const copyToClipboard = async () => {
   if (!password.value) return
 
-  navigator.clipboard.writeText(password.value)
-  copied.value = true
+  await copy(password.value)
   toast({ title: 'Copied!', description: 'Password copied to clipboard.' })
-
-  // Use a more efficient approach than setTimeout
-  const timer = setTimeout(() => {
-    copied.value = false
-    clearTimeout(timer)
-  }, 2000)
 }
 
 // Generate a new password when the password length or character set changes
