@@ -179,7 +179,7 @@ onMounted(handleGenerate)
           <!-- Character types selection -->
           <div class="space-y-3">
             <Label>Character Types</Label>
-            <div class="flex items-center justify-between gap-3">
+            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div
                 v-for="(_value, key) in characters"
                 :key="key"
