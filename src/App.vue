@@ -24,6 +24,7 @@ import { Progress } from '@/components/ui/progress'
 import { Slider } from '@/components/ui/slider'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
 import { Check, Copy, RefreshCw } from 'lucide-vue-next'
@@ -105,44 +106,66 @@ onMounted(handleGenerate)
 </script>
 
 <template>
-  <main class="grid min-h-screen place-items-center">
-    <Card class="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Password Generator</CardTitle>
-        <CardDescription>Create a strong and secure password</CardDescription>
-      </CardHeader>
-
-      <CardContent class="space-y-4">
-        <!-- Password input field with copy button -->
-        <div class="relative">
-          <Input
-            :value="password"
-            class="pr-10 font-mono text-base"
-            placeholder="Your password will appear here"
-            readonly
-          />
-          <Button
-            variant="transparent"
-            size="icon"
-            class="absolute right-1 top-1/2 -translate-y-1/2"
-            :disabled="!password"
-            @click="copyToClipboard"
-          >
-            <Check
-              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-green-500 transition-all"
-              :class="copied ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"
-            />
-            <Copy
-              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all"
-              :class="copied ? 'scale-0 opacity-0' : 'scale-100 opacity-100'"
-            />
-            <span class="sr-only">{{ copied ? 'Copied' : 'Copy' }}</span>
-          </Button>
+  <main class="container grid min-h-screen place-content-center py-32">
+    <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+      <div class="flex flex-col gap-6 lg:col-span-7">
+        <!-- Hero section -->
+        <div class="flex flex-col gap-3">
+          <h2 class="text-3xl font-extrabold sm:text-4xl">Generate Strong, Secure Passwords</h2>
+          <p class="max-w-2xl text-xl text-muted-foreground">
+            Create unique passwords that are virtually impossible to crack with our advanced
+            password generator.
+          </p>
         </div>
 
-        <div class="space-y-6">
+        <!-- Features section -->
+        <ul class="max-w-2xl divide-y">
+          <li v-for="feature in FEATURES" :key="feature.title" class="flex gap-3 py-3">
+            <component :is="feature.icon" class="size-6" />
+            <div class="flex-1 space-y-1.5">
+              <h3 class="text-lg font-semibold leading-none tracking-tight">
+                {{ feature.title }}
+              </h3>
+              <p class="text-muted-foreground">{{ feature.description }}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Password generator card -->
+      <Card class="lg:col-span-5">
+        <CardHeader>
+          <CardTitle>Password Generator</CardTitle>
+          <CardDescription>Create a strong and secure password</CardDescription>
+        </CardHeader>
+
+        <CardContent class="space-y-6">
+          <!-- Password input field with copy button -->
+          <div class="relative">
+            <Input
+              :value="password"
+              class="pr-10 font-mono text-base"
+              placeholder="Your password will appear here"
+              readonly
+            />
+            <Button
+              variant="transparent"
+              size="icon"
+              class="copy-button"
+              :disabled="!password"
+              @click="copyToClipboard"
+            >
+              <Check
+                class="icon-transition text-green-500"
+                :class="copied ? 'icon-visible' : 'icon-hidden'"
+              />
+              <Copy class="icon-transition" :class="copied ? 'icon-hidden' : 'icon-visible'" />
+              <span class="sr-only">{{ copied ? 'Copied' : 'Copy' }}</span>
+            </Button>
+          </div>
+
           <!-- Password length controls -->
-          <div class="space-y-2">
+          <div class="space-y-3">
             <NumberField id="length" v-model="passwordLength" :min="8" :max="100">
               <Label for="length">Password Length</Label>
               <NumberFieldContent>
@@ -158,11 +181,11 @@ onMounted(handleGenerate)
           <!-- Character types selection -->
           <div class="space-y-3">
             <Label>Character Types</Label>
-            <div class="flex items-center justify-between gap-2">
+            <div class="flex items-center justify-between gap-3">
               <div
                 v-for="(_value, key) in characters"
                 :key="key"
-                class="flex items-center space-x-2"
+                class="flex items-center space-x-1.5"
               >
                 <Checkbox v-model="characters[key]" />
                 <Label class="cursor-pointer capitalize">{{ key }}</Label>
@@ -171,8 +194,8 @@ onMounted(handleGenerate)
           </div>
 
           <!-- Password strength indicator -->
-          <div v-if="password" class="space-y-4">
-            <div class="space-y-2">
+          <div v-if="password" class="space-y-3">
+            <div class="space-y-3">
               <div class="flex justify-between">
                 <Label>Password Strength</Label>
                 <span class="text-sm font-medium">{{ strength.rating }}</span>
@@ -184,17 +207,35 @@ onMounted(handleGenerate)
               <span class="capitalize">{{ strength.cracktime }}</span>
             </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
 
-      <CardFooter>
-        <Button class="w-full" @click="handleGenerate">
-          <RefreshCw />
-          Generate New Password
-        </Button>
-      </CardFooter>
-    </Card>
+        <CardFooter>
+          <Button class="w-full" @click="handleGenerate">
+            <RefreshCw />
+            Generate New Password
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
   </main>
 
   <Toaster />
 </template>
+
+<style scoped lang="css">
+.copy-button {
+  @apply absolute right-1 top-1/2 -translate-y-1/2;
+}
+
+.icon-transition {
+  @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all;
+}
+
+.icon-visible {
+  @apply scale-100 opacity-100;
+}
+
+.icon-hidden {
+  @apply scale-0 opacity-0;
+}
+</style>
