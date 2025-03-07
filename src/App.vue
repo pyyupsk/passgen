@@ -24,6 +24,7 @@ import { Progress } from '@/components/ui/progress'
 import { Slider } from '@/components/ui/slider'
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import { useToast } from '@/components/ui/toast/use-toast'
+import { useMetadata } from '@/composables/use-metadata'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
@@ -33,6 +34,11 @@ import { ref, computed, watchEffect, onMounted } from 'vue'
 
 const { toast } = useToast()
 const { copy, copied } = useClipboard()
+
+useMetadata({
+  title: 'Password Generator',
+  description: 'Generate strong and secure passwords with our advanced password generator.',
+})
 
 // The password to be generated
 const password = ref<string>('')

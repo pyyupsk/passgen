@@ -1,5 +1,10 @@
 import '@/assets/main.css'
 import App from '@/App.vue'
+import { createHead } from '@vueuse/head'
 import { createApp } from 'vue'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+const head = createHead()
+
+app.use(head)
+app.mount('#app')
