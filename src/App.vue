@@ -8,6 +8,9 @@ import { generatePassword } from '@/utils/generate-password'
 import { useClipboard, useDebounceFn } from '@vueuse/core'
 import { Check, Copy, RefreshCw } from 'lucide-vue-next'
 import { ref, computed, onMounted, watchEffect } from 'vue'
+import { defineAsyncComponent } from 'vue'
+
+const StrengthIndicator = defineAsyncComponent(() => import('@/components/StrengthIndicator.vue'))
 
 const { copied, copy } = useClipboard()
 
@@ -32,24 +35,6 @@ const characters = ref<CharacterSet>({
 
 // Memoized strength calculation
 const strength = computed(() => calculateStrength(password.value))
-
-// Memoized strength color calculation
-const getStrengthColor = computed(() => {
-  switch (strength.value.score) {
-    case 0:
-      return 'text-red-500'
-    case 1:
-      return 'text-amber-500'
-    case 2:
-      return 'text-yellow-500'
-    case 3:
-      return 'text-lime-500'
-    case 4:
-      return 'text-emerald-500'
-    default:
-      return 'text-red-500'
-  }
-})
 
 // Generate a new password
 const handleGenerate = useDebounceFn(() => {
@@ -77,16 +62,16 @@ onMounted(generatePassword(passwordLength.value, characters.value))
 
 <template>
   <main class="container grid min-h-screen place-content-center py-32">
-    <div class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
-      <div class="flex flex-col gap-6 lg:col-span-7">
+    <section class="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+      <article class="flex flex-col gap-6 lg:col-span-7">
         <!-- Hero section -->
-        <div class="flex flex-col gap-3">
+        <header class="flex flex-col gap-3">
           <h2 class="text-3xl font-extrabold sm:text-4xl">Generate Strong, Secure Passwords</h2>
           <p class="text-base-content/80 max-w-2xl text-xl">
             Create unique passwords that are virtually impossible to crack with our advanced
             password generator.
           </p>
-        </div>
+        </header>
 
         <!-- Features section -->
         <ul class="max-w-2xl divide-y">
@@ -100,29 +85,33 @@ onMounted(generatePassword(passwordLength.value, characters.value))
             </div>
           </li>
         </ul>
-      </div>
+      </article>
 
       <!-- Password generator card -->
-      <div class="card card-border lg:col-span-5">
+      <article class="card card-border lg:col-span-5">
         <div class="card-body space-y-3">
           <!-- Card title -->
-          <div>
-            <div class="card-title">Password Generator</div>
+          <header>
+            <h3 class="card-title">Password Generator</h3>
             <p class="text-base-content/80">Create a strong and secure password</p>
-          </div>
+          </header>
 
           <!-- Password input field with copy button -->
           <div class="relative">
+            <label for="password" class="sr-only">Generated Password</label>
             <input
+              id="password"
               :value="password"
               class="input w-full pr-10 font-mono text-base"
               placeholder="Your password will appear here"
               readonly
+              aria-label="Generated password"
             />
             <button
               class="absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer"
               :disabled="!password"
               @click="copyToClipboard"
+              aria-label="Copy password to clipboard"
             >
               <Check
                 class="text-success absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 transition-all"
@@ -138,8 +127,9 @@ onMounted(generatePassword(passwordLength.value, characters.value))
 
           <!-- Password length controls -->
           <div class="space-y-1.5">
-            <label class="label">Password Length</label>
+            <label for="length" class="label">Password Length</label>
             <input
+              id="length"
               type="range"
               v-model="passwordLength"
               :min="8"
@@ -150,8 +140,11 @@ onMounted(generatePassword(passwordLength.value, characters.value))
 
           <!-- Character types selection -->
           <div class="space-y-1.5">
-            <label class="label">Character Types</label>
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <label for="character" class="label">Character Types</label>
+            <div
+              id="character"
+              class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
+            >
               <div
                 v-for="(_value, key) in characters"
                 :key="key"
@@ -166,35 +159,18 @@ onMounted(generatePassword(passwordLength.value, characters.value))
           </div>
 
           <!-- Password strength indicator -->
-          <div v-if="password" class="space-y-1.5">
-            <div class="space-y-3">
-              <label class="label flex justify-between">
-                <span>Password Strength</span>
-                <span class="text-sm font-medium">{{ strength.rating }}</span>
-              </label>
-              <progress
-                class="progress"
-                :class="getStrengthColor"
-                :value="strength.percentage"
-                max="100"
-              />
-            </div>
-            <div class="text-sm">
-              <span class="font-medium">Estimated cracking time: </span>
-              <span class="capitalize">{{ strength.cracktime }}</span>
-            </div>
-          </div>
+          <StrengthIndicator v-if="password" :strength="strength" />
 
           <!-- Generate button -->
           <div class="card-actions">
-            <button class="btn w-full" @click="handleGenerate">
+            <button class="btn w-full" @click="handleGenerate" aria-label="Generate new password">
               <RefreshCw class="size-4" />
               Generate New Password
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </article>
+    </section>
   </main>
 </template>
 
