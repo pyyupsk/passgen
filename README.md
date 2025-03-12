@@ -54,19 +54,17 @@ Generate strong, secure passwords with this modern, browser-based password gener
 
 - **Frontend Framework**: Vue 3 with Composition API
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Components**: Shadcn/UI (Vue)
-- **Password Strength**: zxcvbn-ts
+- **Styling**: Tailwind CSS wth daisyUI
 
 ## 📊 Password Strength Rating
 
 The application uses the zxcvbn library to calculate password strength:
 
-- **Very weak**: Easily crackable in seconds
+- **Extremely Weak**: Easily crackable in seconds
 - **Weak**: Crackable in minutes to hours
-- **Medium**: Crackable in days to months
-- **Strong**: Crackable in years
-- **Very strong**: Virtually impossible to crack with current technology
+- **Moderate**: Crackable in minutes to hours
+- **Strong**: Crackable in hours to months
+- **Very Strong**: Virtually impossible to crack with current technology
 
 ## 🔧 Customization
 
@@ -108,9 +106,10 @@ This project is licensed under the [MIT License](LICENSE) - see the LICENSE file
 ## 🙏 Acknowledgements
 
 - [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn) for password strength estimation
-- [Lucide Icons](https://lucide.dev/) for beautiful icons
 - [VueUse](https://vueuse.org/) for useful Vue 3 composables
 - [Tailwind CSS](https://tailwindcss.com/) for styling
+- [daisyUI](https://daisyui.com/) for components class names
+- [Lucide Icons](https://lucide.dev/) for beautiful icons
 
 ---
 
