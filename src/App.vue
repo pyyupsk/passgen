@@ -1,39 +1,15 @@
 <script setup lang="ts">
 import type { CharacterSet } from '@/types/CharacterSet'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from '@/components/ui/number-field'
-import { Progress } from '@/components/ui/progress'
-import { Slider } from '@/components/ui/slider'
-import Toaster from '@/components/ui/toast/Toaster.vue'
-import { useToast } from '@/components/ui/toast/use-toast'
 import { useMetadata } from '@/composables/use-metadata'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
-import { useClipboard } from '@vueuse/core'
+import { useClipboard, useDebounceFn } from '@vueuse/core'
 import { Check, Copy, RefreshCw } from 'lucide-vue-next'
-import { ref, computed, watchEffect, onMounted } from 'vue'
+import { ref, computed, onMounted, watchEffect } from 'vue'
 
-const { toast } = useToast()
-const { copy, copied } = useClipboard()
+const { copied, copy } = useClipboard()
 
 useMetadata({
   title: 'Password Generator',
@@ -59,37 +35,33 @@ const strength = computed(() => calculateStrength(password.value))
 
 // Memoized strength color calculation
 const getStrengthColor = computed(() => {
-  switch (strength.value.rating) {
-    case 'Very weak':
-      return 'bg-red-500'
-    case 'Weak':
-      return 'bg-amber-500'
-    case 'Medium':
-      return 'bg-yellow-500'
-    case 'Strong':
-      return 'bg-lime-500'
+  switch (strength.value.score) {
+    case 0:
+      return 'text-red-500'
+    case 1:
+      return 'text-amber-500'
+    case 2:
+      return 'text-yellow-500'
+    case 3:
+      return 'text-lime-500'
+    case 4:
+      return 'text-emerald-500'
     default:
-      return 'bg-emerald-500'
+      return 'text-red-500'
   }
 })
 
-// Using a single reactive variable for slider (needed for component compatibility)
-const lengthSlider = computed({
-  get: () => [passwordLength.value],
-  set: (val) => (passwordLength.value = val[0]),
-})
-
 // Generate a new password
-const handleGenerate = () => {
+const handleGenerate = useDebounceFn(() => {
   password.value = generatePassword(passwordLength.value, characters.value)
-}
+}, 100)
 
 // Copy the password to the clipboard using VueUse
 const copyToClipboard = async () => {
   if (!password.value) return
 
   await copy(password.value)
-  toast({ title: 'Copied!', description: 'Password copied to clipboard.' })
+  // toast({ title: 'Copied!', description: 'Password copied to clipboard.' })
 }
 
 // Generate a new password when the password length or character set changes
@@ -100,7 +72,7 @@ watchEffect(() => {
 })
 
 // Generate initial password on mount
-onMounted(handleGenerate)
+onMounted(generatePassword(passwordLength.value, characters.value))
 </script>
 
 <template>
@@ -110,7 +82,7 @@ onMounted(handleGenerate)
         <!-- Hero section -->
         <div class="flex flex-col gap-3">
           <h2 class="text-3xl font-extrabold sm:text-4xl">Generate Strong, Secure Passwords</h2>
-          <p class="max-w-2xl text-xl text-muted-foreground">
+          <p class="text-base-content/80 max-w-2xl text-xl">
             Create unique passwords that are virtually impossible to crack with our advanced
             password generator.
           </p>
@@ -121,114 +93,112 @@ onMounted(handleGenerate)
           <li v-for="feature in FEATURES" :key="feature.title" class="flex gap-3 py-3">
             <component :is="feature.icon" class="size-6" />
             <div class="flex-1 space-y-1.5">
-              <h3 class="text-lg font-semibold leading-none tracking-tight">
+              <h3 class="text-lg leading-none font-semibold tracking-tight">
                 {{ feature.title }}
               </h3>
-              <p class="text-muted-foreground">{{ feature.description }}</p>
+              <p class="text-base-content/80">{{ feature.description }}</p>
             </div>
           </li>
         </ul>
       </div>
 
       <!-- Password generator card -->
-      <Card class="lg:col-span-5">
-        <CardHeader>
-          <CardTitle>Password Generator</CardTitle>
-          <CardDescription>Create a strong and secure password</CardDescription>
-        </CardHeader>
+      <div class="card card-border lg:col-span-5">
+        <div class="card-body space-y-3">
+          <!-- Card title -->
+          <div>
+            <div class="card-title">Password Generator</div>
+            <p class="text-base-content/80">Create a strong and secure password</p>
+          </div>
 
-        <CardContent class="space-y-6">
           <!-- Password input field with copy button -->
           <div class="relative">
-            <Input
+            <input
               :value="password"
-              class="pr-10 font-mono text-base"
+              class="input w-full pr-10 font-mono text-base"
               placeholder="Your password will appear here"
               readonly
             />
-            <Button
-              variant="transparent"
-              size="icon"
-              class="copy-button"
+            <button
+              class="absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer"
               :disabled="!password"
               @click="copyToClipboard"
             >
               <Check
-                class="icon-transition text-green-500"
+                class="text-success absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 transition-all"
                 :class="copied ? 'icon-visible' : 'icon-hidden'"
               />
-              <Copy class="icon-transition" :class="copied ? 'icon-hidden' : 'icon-visible'" />
+              <Copy
+                class="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 transition-all"
+                :class="copied ? 'icon-hidden' : 'icon-visible'"
+              />
               <span class="sr-only">{{ copied ? 'Copied' : 'Copy' }}</span>
-            </Button>
+            </button>
           </div>
 
           <!-- Password length controls -->
-          <div class="space-y-3">
-            <NumberField id="length" v-model="passwordLength" :min="8" :max="100">
-              <Label for="length">Password Length</Label>
-              <NumberFieldContent>
-                <NumberFieldDecrement />
-                <NumberFieldInput />
-                <NumberFieldIncrement />
-              </NumberFieldContent>
-            </NumberField>
-
-            <Slider id="length" v-model="lengthSlider" :min="8" :max="100" />
+          <div class="space-y-1.5">
+            <label class="label">Password Length</label>
+            <input
+              type="range"
+              v-model="passwordLength"
+              :min="8"
+              :max="100"
+              class="range range-xs w-full"
+            />
           </div>
 
           <!-- Character types selection -->
-          <div class="space-y-3">
-            <Label>Character Types</Label>
+          <div class="space-y-1.5">
+            <label class="label">Character Types</label>
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div
                 v-for="(_value, key) in characters"
                 :key="key"
                 class="flex items-center space-x-1.5"
               >
-                <Checkbox v-model="characters[key]" />
-                <Label class="cursor-pointer capitalize">{{ key }}</Label>
+                <label class="fieldset-label">
+                  <input type="checkbox" v-model="characters[key]" class="checkbox" />
+                  <span class="cursor-pointer capitalize">{{ key }}</span>
+                </label>
               </div>
             </div>
           </div>
 
           <!-- Password strength indicator -->
-          <div v-if="password" class="space-y-3">
+          <div v-if="password" class="space-y-1.5">
             <div class="space-y-3">
-              <div class="flex justify-between">
-                <Label>Password Strength</Label>
+              <label class="label flex justify-between">
+                <span>Password Strength</span>
                 <span class="text-sm font-medium">{{ strength.rating }}</span>
-              </div>
-              <Progress v-model="strength.percentage" :indicator-class="getStrengthColor" />
+              </label>
+              <progress
+                class="progress"
+                :class="getStrengthColor"
+                :value="strength.percentage"
+                max="100"
+              />
             </div>
             <div class="text-sm">
               <span class="font-medium">Estimated cracking time: </span>
               <span class="capitalize">{{ strength.cracktime }}</span>
             </div>
           </div>
-        </CardContent>
 
-        <CardFooter>
-          <Button class="w-full" @click="handleGenerate">
-            <RefreshCw />
-            Generate New Password
-          </Button>
-        </CardFooter>
-      </Card>
+          <!-- Generate button -->
+          <div class="card-actions">
+            <button class="btn w-full" @click="handleGenerate">
+              <RefreshCw class="size-4" />
+              Generate New Password
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
-
-  <Toaster />
 </template>
 
 <style scoped lang="css">
-.copy-button {
-  @apply absolute right-1 top-1/2 -translate-y-1/2;
-}
-
-.icon-transition {
-  @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all;
-}
-
 .icon-visible {
   @apply scale-100 opacity-100;
 }
