@@ -1,6 +1,6 @@
 @plugin "daisyui/theme" {
   color-scheme: 'dark';
-  
+
   --theme-name: 'dark';
   --theme-default: true;
   --theme-prefers-dark: true;
