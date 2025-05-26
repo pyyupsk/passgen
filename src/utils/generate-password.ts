@@ -11,8 +11,12 @@ export const generatePassword = (length: number, characters: CharacterSet): stri
   if (characters.symbols) charset += SYMBOLS
 
   let password = ''
+
+  const randomValues = new Uint32Array(length)
+  crypto.getRandomValues(randomValues)
+
   for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * charset.length)
+    const randomIndex = randomValues[i] % charset.length
     password += charset[randomIndex]
   }
 
