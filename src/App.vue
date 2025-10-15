@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useClipboard, useDebounceFn } from '@vueuse/core'
 import { Check, Copy, RefreshCw } from 'lucide-vue-next'
-import { ref, computed, onMounted, watchEffect, defineAsyncComponent } from 'vue'
+import { ref, computed, onMounted, watchEffect } from 'vue'
 
 import type { CharacterSet } from '@/types/CharacterSet'
 
+import StrengthIndicator from '@/components/StrengthIndicator.vue'
 import { useMetadata } from '@/composables/use-metadata'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
-
-const StrengthIndicator = defineAsyncComponent(() => import('@/components/StrengthIndicator.vue'))
 
 const { copied, copy } = useClipboard()
 
@@ -57,7 +56,9 @@ watchEffect(() => {
 })
 
 // Generate initial password on mount
-onMounted(generatePassword(passwordLength.value, characters.value))
+onMounted(() => {
+  password.value = generatePassword(passwordLength.value, characters.value)
+})
 </script>
 
 <template>
@@ -159,7 +160,7 @@ onMounted(generatePassword(passwordLength.value, characters.value))
           </div>
 
           <!-- Password strength indicator -->
-          <StrengthIndicator v-if="password" :strength="strength" />
+          <StrengthIndicator v-if="password" :key="password" :strength="strength" />
 
           <!-- Generate button -->
           <div class="card-actions">

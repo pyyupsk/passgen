@@ -16,5 +16,10 @@ export const calculateStrength = (password: string): Strength => {
   const percentage = (score / MAX_SCORE) * 100
   const rating = determineRating(score)
 
-  return { score, percentage, rating, cracktime: crackTimesDisplay.offlineSlowHashing1e4PerSecond }
+  return {
+    score,
+    percentage,
+    rating,
+    cracktime: crackTimesDisplay.offlineSlowHashing1e4PerSecond,
+  }
 }
