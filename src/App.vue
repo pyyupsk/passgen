@@ -6,17 +6,11 @@ import { ref, computed, onMounted, watchEffect } from 'vue'
 import type { CharacterSet } from '@/types/CharacterSet'
 
 import StrengthIndicator from '@/components/StrengthIndicator.vue'
-import { useMetadata } from '@/composables/use-metadata'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
 
 const { copied, copy } = useClipboard()
-
-useMetadata({
-  title: 'Password Generator',
-  description: 'Generate strong and secure passwords with our advanced password generator.',
-})
 
 // The password to be generated
 const password = ref<string>('')

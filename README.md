@@ -2,7 +2,7 @@
 
 Generate strong, secure passwords with this modern, browser-based password generator tool. Built with Vue 3 and TypeScript, this application provides a user-friendly interface for creating customizable passwords with real-time strength analysis.
 
-![Password Generator Screenshot](.github/assets/screenshot.png)
+![Password Generator Screenshot](public/og-image.png)
 
 ## ✨ Features
 
