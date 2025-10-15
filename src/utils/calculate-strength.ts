@@ -1,9 +1,10 @@
+import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core'
+import { translations } from '@zxcvbn-ts/language-en'
+
 import type { Strength } from '@/types/Strength'
 
 import { MAX_SCORE } from '@/constants'
 import { determineRating } from '@/utils/determine-rating'
-import { zxcvbn, zxcvbnOptions } from '@zxcvbn-ts/core'
-import { translations } from '@zxcvbn-ts/language-en'
 
 zxcvbnOptions.setOptions({
   translations: translations,

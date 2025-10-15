@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { useClipboard, useDebounceFn } from '@vueuse/core'
+import { Check, Copy, RefreshCw } from 'lucide-vue-next'
+import { ref, computed, onMounted, watchEffect, defineAsyncComponent } from 'vue'
+
 import type { CharacterSet } from '@/types/CharacterSet'
 
 import { useMetadata } from '@/composables/use-metadata'
 import { FEATURES } from '@/constants'
 import { calculateStrength } from '@/utils/calculate-strength'
 import { generatePassword } from '@/utils/generate-password'
-import { useClipboard, useDebounceFn } from '@vueuse/core'
-import { Check, Copy, RefreshCw } from 'lucide-vue-next'
-import { ref, computed, onMounted, watchEffect , defineAsyncComponent } from 'vue'
 
 const StrengthIndicator = defineAsyncComponent(() => import('@/components/StrengthIndicator.vue'))
 

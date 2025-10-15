@@ -1,4 +1,4 @@
-@plugin "daisyui/theme" {
+@plugin 'daisyui/theme' {
   color-scheme: 'dark';
 
   --theme-name: 'dark';

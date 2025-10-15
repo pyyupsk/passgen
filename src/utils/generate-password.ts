@@ -16,7 +16,7 @@ export const generatePassword = (length: number, characters: CharacterSet): stri
   crypto.getRandomValues(randomValues)
 
   for (let i = 0; i < length; i++) {
-    const randomIndex = randomValues[i] % charset.length
+    const randomIndex = randomValues[i]! % charset.length
     password += charset[randomIndex]
   }
 

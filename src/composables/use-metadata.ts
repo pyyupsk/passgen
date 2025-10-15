@@ -1,6 +1,6 @@
-import type { MetadataOptions } from '@/types/MetadataOptions'
-
 import { useHead, useSeoMeta } from '@vueuse/head'
+
+import type { MetadataOptions } from '@/types/MetadataOptions'
 
 const AUTHOR = 'pyyupsk'
 const TWITTER_HANDLE = '@pyyupsk_'
