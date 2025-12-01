@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
-    "@vueuse/core": "^13.9.0",
+    "@vueuse/core": "^14.1.0",
     "@vueuse/head": "^2.0.0",
     "@zxcvbn-ts/core": "^3.0.4",
     "@zxcvbn-ts/language-en": "^3.0.2",
