@@ -16,8 +16,8 @@ Generate strong, secure passwords with this modern, browser-based password gener
 
 ### Prerequisites
 
-- Node.js (recommended v22.14.0)
-- npm or yarn or pnpm
+- Node.js (recommended v22.19.0 LTS)
+- bun (<https://bun.sh/install>)
 
 ### Installation
 
@@ -31,30 +31,22 @@ Generate strong, secure passwords with this modern, browser-based password gener
 2. Install dependencies:
 
    ```bash
-   npm install
-   # or
-   yarn install
-   # or
-   pnpm install
+   bun install
    ```
 
 3. Start the development server:
 
    ```bash
-   npm run dev
-   # or
-   yarn dev
-   # or
-   pnpm dev
+   bun run dev
    ```
 
-4. Open your browser and navigate to `http://localhost:5173`
+4. Open your browser and navigate to `http://localhost:3000`
 
 ## 🛠️ Tech Stack
 
 - **Frontend Framework**: Vue 3 with Composition API
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS wth daisyUI
+- **Styling**: Tailwind CSS wth shadcn-vue
 
 ## 📊 Password Strength Rating
 
@@ -108,7 +100,7 @@ This project is licensed under the [MIT License](LICENSE) - see the LICENSE file
 - [zxcvbn-ts](https://github.com/zxcvbn-ts/zxcvbn) for password strength estimation
 - [VueUse](https://vueuse.org/) for useful Vue 3 composables
 - [Tailwind CSS](https://tailwindcss.com/) for styling
-- [daisyUI](https://daisyui.com/) for components class names
+- [shadcn-vue](https://shadcn-vue.com/) for reusable UI components
 - [Lucide Icons](https://lucide.dev/) for beautiful icons
 
 ---
