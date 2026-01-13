@@ -7,13 +7,13 @@
       "dependencies": {
         "@zxcvbn-ts/core": "^3.0.4",
         "@zxcvbn-ts/language-en": "^3.0.2",
-        "vue": "^3.5.25",
+        "vue": "^3.5.26",
       },
       "devDependencies": {
         "@wxt-dev/module-vue": "^1.0.3",
         "typescript": "^5.9.3",
-        "vue-tsc": "^3.1.8",
-        "wxt": "^0.20.6",
+        "vue-tsc": "^3.2.2",
+        "wxt": "^0.20.13",
       },
     },
   },
