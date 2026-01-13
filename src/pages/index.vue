@@ -3,9 +3,8 @@ import { useClipboard, useDebounceFn } from "@vueuse/core";
 import { Check, Copy, RefreshCw } from "lucide-vue-next";
 import { computed, onMounted, ref, watchEffect } from "vue";
 
-import type { CharacterSet } from "@/types/CharacterSet";
+import type { CharacterSet } from "@/pages/_types/CharacterSet";
 
-import StrengthIndicator from "@/components/StrengthIndicator.vue";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,9 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FEATURES } from "@/constants";
-import { calculateStrength } from "@/utils/calculate-strength";
-import { generatePassword } from "@/utils/generate-password";
+import { FEATURES } from "@/pages/_constants";
+import { calculateStrength } from "@/pages/_utils/calculate-strength";
+import { generatePassword } from "@/pages/_utils/generate-password";
+
+import StrengthIndicator from "./_components/StrengthIndicator.vue";
 
 const { copied, copy } = useClipboard();
 
@@ -52,10 +53,7 @@ const copyToClipboard = async () => {
 
 // Generate a new password when the password length or character set changes
 watchEffect(() => {
-  if (
-    passwordLength.value &&
-    Object.values(characters.value).some((val) => val)
-  ) {
+  if (passwordLength.value && Object.values(characters.value).some(Boolean)) {
     handleGenerate();
   }
 });

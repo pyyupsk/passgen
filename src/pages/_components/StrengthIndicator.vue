@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-import type { Strength } from "@/types/Strength";
+import type { Strength } from "@/pages/_types/Strength";
 
 const props = defineProps<{
   strength: Strength;
