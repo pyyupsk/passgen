@@ -124,7 +124,6 @@ export const detectPasswordFields = (): PasswordField[] => {
       autocomplete,
       context,
       element,
-      iconElement: null,
       pairedField: null,
     });
   });

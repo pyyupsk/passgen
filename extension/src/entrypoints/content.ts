@@ -2,96 +2,23 @@ import { createApp } from "vue";
 
 import type { PasswordField } from "@/types/PasswordField";
 
-import "@/assets/css/content.css";
 import PasswordPopup from "@/components/PasswordPopup.vue";
 import { linkPairedFields } from "@/utils/detection/paired-field";
 import { detectPasswordFields } from "@/utils/detection/password-field";
 
 let detectedFields: PasswordField[] = [];
 let activePopup: null | { container: HTMLElement; unmount: () => void } = null;
+let activeField: null | PasswordField = null;
 
-const createIcon = (): HTMLElement => {
-  const icon = document.createElement("div");
-  icon.className = "passgen-icon";
-  icon.innerHTML = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-  `;
-  icon.style.cssText = `
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    color: #888;
-    background: transparent;
-    border-radius: 4px;
-    transition: color 0.2s, background 0.2s;
-    z-index: 10000;
-  `;
-  icon.addEventListener("mouseenter", () => {
-    icon.style.color = "#fff";
-    icon.style.background = "rgba(255, 255, 255, 0.1)";
-  });
-  icon.addEventListener("mouseleave", () => {
-    icon.style.color = "#888";
-    icon.style.background = "transparent";
-  });
-  return icon;
-};
+const showPopup = (field: PasswordField): void => {
+  // Don't reopen if already showing for this field
+  if (activeField === field && activePopup) return;
 
-const positionIcon = (icon: HTMLElement, input: HTMLInputElement): void => {
-  const rect = input.getBoundingClientRect();
-  const parent = input.offsetParent as HTMLElement;
-
-  if (parent && parent !== document.body) {
-    const parentRect = parent.getBoundingClientRect();
-    icon.style.top = `${rect.top - parentRect.top + rect.height / 2}px`;
-    icon.style.right = `${parentRect.right - rect.right + 8}px`;
-  }
-};
-
-const injectIcon = (field: PasswordField): void => {
-  if (field.iconElement) return;
-
-  const input = field.element;
-  const wrapper = document.createElement("div");
-  wrapper.style.cssText =
-    "position: relative; display: inline-block; width: 100%;";
-
-  // Wrap input if not already wrapped
-  if (input.parentElement?.style.position !== "relative") {
-    input.parentElement?.insertBefore(wrapper, input);
-    wrapper.appendChild(input);
-  }
-
-  const icon = createIcon();
-  field.iconElement = icon;
-
-  icon.addEventListener("click", (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    showPopup(field, icon);
-  });
-
-  // Insert icon after input in the wrapper
-  if (input.parentElement) {
-    input.parentElement.style.position = "relative";
-    input.parentElement.appendChild(icon);
-    positionIcon(icon, input);
-  }
-};
-
-const showPopup = (field: PasswordField, iconElement: HTMLElement): void => {
   // Close existing popup
   closePopup();
+
+  activeField = field;
+  const inputRect = field.element.getBoundingClientRect();
 
   // Create popup container
   const container = document.createElement("div");
@@ -116,30 +43,30 @@ const showPopup = (field: PasswordField, iconElement: HTMLElement): void => {
   const mountPoint = document.createElement("div");
   shadow.appendChild(mountPoint);
 
-  // Position popup relative to icon
-  const iconRect = iconElement.getBoundingClientRect();
-  const popupHeight = 220; // Approximate popup height
+  // Position popup relative to input
+  const popupHeight = 220;
   const popupWidth = 280;
   const margin = 8;
 
-  // Check if popup fits below the icon
-  const spaceBelow = window.innerHeight - iconRect.bottom - margin;
-  const spaceAbove = iconRect.top - margin;
+  // Check if popup fits below the input
+  const spaceBelow = window.innerHeight - inputRect.bottom - margin;
+  const spaceAbove = inputRect.top - margin;
   const openAbove = spaceBelow < popupHeight && spaceAbove > spaceBelow;
 
-  // Calculate horizontal position (prefer right-aligned with icon)
-  const rightOffset = window.innerWidth - iconRect.right;
-  const wouldOverflowRight = rightOffset < 0;
-  const wouldOverflowLeft = iconRect.right - popupWidth < 0;
+  // Calculate horizontal position (align with input left edge)
+  const leftPos = inputRect.left;
+  const wouldOverflowRight = leftPos + popupWidth > window.innerWidth - margin;
 
-  let horizontalStyle = `right: ${Math.max(margin, rightOffset)}px;`;
-  if (wouldOverflowRight && !wouldOverflowLeft) {
-    horizontalStyle = `left: ${Math.max(margin, iconRect.left)}px;`;
+  let horizontalStyle: string;
+  if (wouldOverflowRight) {
+    horizontalStyle = `right: ${margin}px;`;
+  } else {
+    horizontalStyle = `left: ${Math.max(margin, leftPos)}px;`;
   }
 
   container.style.cssText = `
     position: fixed;
-    ${openAbove ? `bottom: ${window.innerHeight - iconRect.top + margin}px;` : `top: ${iconRect.bottom + margin}px;`}
+    ${openAbove ? `bottom: ${window.innerHeight - inputRect.top + margin}px;` : `top: ${inputRect.bottom + margin}px;`}
     ${horizontalStyle}
     z-index: 2147483647;
   `;
@@ -162,7 +89,7 @@ const showPopup = (field: PasswordField, iconElement: HTMLElement): void => {
 
   // Add click outside listener
   setTimeout(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
   }, 0);
 };
 
@@ -171,7 +98,8 @@ const closePopup = (): void => {
     activePopup.unmount();
     activePopup.container.remove();
     activePopup = null;
-    document.removeEventListener("click", handleClickOutside);
+    activeField = null;
+    document.removeEventListener("mousedown", handleClickOutside);
   }
 };
 
@@ -179,15 +107,16 @@ const handleClickOutside = (e: MouseEvent): void => {
   const target = e.target as Node;
   const popupContainer = document.getElementById("passgen-popup-container");
 
-  if (popupContainer && !popupContainer.contains(target)) {
-    // Check if click is on an icon
-    const isIconClick = detectedFields.some((field) =>
-      field.iconElement?.contains(target),
-    );
-    if (!isIconClick) {
-      closePopup();
-    }
-  }
+  // Check if click is inside popup
+  if (popupContainer?.contains(target)) return;
+
+  // Check if click is on a detected password field
+  const isFieldClick = detectedFields.some((field) =>
+    field.element.contains(target),
+  );
+  if (isFieldClick) return;
+
+  closePopup();
 };
 
 const fillPassword = (field: PasswordField, password: string): void => {
@@ -211,12 +140,24 @@ const setInputValue = (input: HTMLInputElement, value: string): void => {
   input.dispatchEvent(new Event("change", { bubbles: true }));
 };
 
-const scanAndInjectIcons = (): void => {
+const attachFieldListener = (field: PasswordField): void => {
+  const input = field.element;
+
+  // Mark as processed to avoid duplicate listeners
+  if (input.dataset.passgenAttached) return;
+  input.dataset.passgenAttached = "true";
+
+  input.addEventListener("focus", () => {
+    showPopup(field);
+  });
+};
+
+const scanAndAttachListeners = (): void => {
   detectedFields = detectPasswordFields();
   linkPairedFields(detectedFields);
 
   for (const field of detectedFields) {
-    injectIcon(field);
+    attachFieldListener(field);
   }
 };
 
@@ -236,7 +177,7 @@ const setupMutationObserver = (): void => {
     );
 
     if (shouldRescan) {
-      setTimeout(scanAndInjectIcons, 100);
+      setTimeout(scanAndAttachListeners, 100);
     }
   });
 
@@ -252,11 +193,11 @@ export default defineContentScript({
     // Initial scan
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => {
-        scanAndInjectIcons();
+        scanAndAttachListeners();
         setupMutationObserver();
       });
     } else {
-      scanAndInjectIcons();
+      scanAndAttachListeners();
       setupMutationObserver();
     }
   },
