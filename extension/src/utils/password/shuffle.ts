@@ -1,0 +1,19 @@
+export const shuffle = (password: string): string => {
+  // Early return for empty or single-character passwords
+  if (password.length <= 1) {
+    return password;
+  }
+
+  const array = password.split("");
+
+  const randomValues = new Uint32Array(array.length);
+  crypto.getRandomValues(randomValues);
+
+  // Fisher-Yates shuffle
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = randomValues[i]! % (i + 1); // NOSONAR
+    [array[i], array[j]] = [array[j]!, array[i]!]; // NOSONAR
+  }
+
+  return array.join("");
+};

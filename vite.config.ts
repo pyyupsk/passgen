@@ -32,18 +32,18 @@ export default defineConfig({
         icons: [
           {
             sizes: "192x192",
-            src: "pwa-192x192.png",
+            src: "web-app-manifest-192x192.png",
             type: "image/png",
           },
           {
             sizes: "512x512",
-            src: "pwa-512x512.png",
+            src: "web-app-manifest-512x512.png",
             type: "image/png",
           },
           {
             purpose: "any maskable",
             sizes: "512x512",
-            src: "pwa-512x512.png",
+            src: "web-app-manifest-512x512.png",
             type: "image/png",
           },
         ],
