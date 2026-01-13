@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { FEATURES } from "@/pages/_constants";
 import { generatePassword } from "@/pages/_utils/password/generate";
 import { calculateStrength } from "@/pages/_utils/strength/calculate";
@@ -106,10 +107,10 @@ onMounted(() => {
           <!-- Password input field with copy button -->
           <div class="relative">
             <label for="password" class="sr-only">Generated Password</label>
-            <input
+            <Input
               id="password"
-              :value="password"
-              class="bg-input/30 border-input focus:ring-ring/50 h-10 w-full rounded-md border px-3 pr-10 font-mono text-sm focus:ring-2 focus:outline-none"
+              :model-value="password"
+              class="h-10 pr-10 font-mono"
               placeholder="Your password will appear here"
               readonly
               aria-label="Generated password"
@@ -139,7 +140,9 @@ onMounted(() => {
               class="flex justify-between text-sm font-medium"
             >
               <span>Password Length</span>
-              <span class="text-muted-foreground">{{ passwordLength }}</span>
+              <span class="text-muted-foreground font-mono">{{
+                passwordLength
+              }}</span>
             </label>
             <input
               id="length"
@@ -200,7 +203,7 @@ onMounted(() => {
             </div>
             <div class="text-muted-foreground text-sm">
               <span class="font-medium">Estimated cracking time: </span>
-              <span class="capitalize">{{ strength.cracktime }}</span>
+              <span class="font-mono capitalize">{{ strength.cracktime }}</span>
             </div>
           </div>
         </CardContent>
