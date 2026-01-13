@@ -118,10 +118,29 @@ const showPopup = (field: PasswordField, iconElement: HTMLElement): void => {
 
   // Position popup relative to icon
   const iconRect = iconElement.getBoundingClientRect();
+  const popupHeight = 220; // Approximate popup height
+  const popupWidth = 280;
+  const margin = 8;
+
+  // Check if popup fits below the icon
+  const spaceBelow = window.innerHeight - iconRect.bottom - margin;
+  const spaceAbove = iconRect.top - margin;
+  const openAbove = spaceBelow < popupHeight && spaceAbove > spaceBelow;
+
+  // Calculate horizontal position (prefer right-aligned with icon)
+  const rightOffset = window.innerWidth - iconRect.right;
+  const wouldOverflowRight = rightOffset < 0;
+  const wouldOverflowLeft = iconRect.right - popupWidth < 0;
+
+  let horizontalStyle = `right: ${Math.max(margin, rightOffset)}px;`;
+  if (wouldOverflowRight && !wouldOverflowLeft) {
+    horizontalStyle = `left: ${Math.max(margin, iconRect.left)}px;`;
+  }
+
   container.style.cssText = `
     position: fixed;
-    top: ${iconRect.bottom + 8}px;
-    right: ${window.innerWidth - iconRect.right}px;
+    ${openAbove ? `bottom: ${window.innerHeight - iconRect.top + margin}px;` : `top: ${iconRect.bottom + margin}px;`}
+    ${horizontalStyle}
     z-index: 2147483647;
   `;
 
