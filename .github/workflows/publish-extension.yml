@@ -31,20 +31,12 @@ jobs:
         run: bun run zip:firefox
         working-directory: extension
 
-      - name: Upload to Chrome Web Store
-        uses: mnao305/chrome-extension-upload@4008e29e13c144d0f6725462cbd49b7c291b4928 # v5.0.0
-        with:
-          file-path: extension/.output/*-chrome.zip
-          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          client-id: ${{ secrets.CHROME_CLIENT_ID }}
-          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
-          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-
       - name: Upload to Firefox Add-ons
         uses: wdzeng/firefox-addon@b78a4d0148897b072ef18aff65a6bd793e8109be # v1.2.0
         with:
           addon-guid: ${{ secrets.FIREFOX_ADDON_GUID }}
           xpi-path: extension/.output/*-firefox.zip
+          source-file-path: extension/.output/*-sources.zip
           jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
           jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}
 
