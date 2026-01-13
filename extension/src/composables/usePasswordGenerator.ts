@@ -50,8 +50,14 @@ export const usePasswordGenerator = () => {
       return;
     }
 
-    password.value = generatePassword(length.value, characters.value);
-    strength.value = calculateStrength(password.value);
+    try {
+      password.value = generatePassword(length.value, characters.value);
+      strength.value = calculateStrength(password.value);
+    } catch (e) {
+      error.value = String(e) || "Password generation error";
+      password.value = "";
+      strength.value = null;
+    }
   };
 
   const regenerate = (): void => {

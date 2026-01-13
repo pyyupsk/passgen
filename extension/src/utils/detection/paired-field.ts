@@ -83,29 +83,47 @@ const findConfirmPasswordField = (
 export const findPairedField = (
   field: PasswordField,
 ): HTMLInputElement | null => {
-  const form = field.element.closest("form");
+  // Use form property first, then fall back to closest
+  const form = field.element.form ?? field.element.closest("form");
   if (!form) return null;
 
   const passwordInputs = form.querySelectorAll<HTMLInputElement>(
     'input[type="password"]',
   );
-  if (passwordInputs.length < 2) return null;
+
+  // Filter out current-password inputs for all operations
+  const nonCurrentPasswordInputs = Array.from(passwordInputs).filter(
+    (input) => !isCurrentPassword(input),
+  );
+
+  if (nonCurrentPasswordInputs.length < 2) return null;
 
   // If the field itself is a confirm field, find the main password field
   if (field.context === "confirm") {
     const mainField = findMainPasswordField(passwordInputs, field.element);
     if (mainField) return mainField;
+
+    // Only attempt fallback if exactly 2 non-current-password inputs exist
+    // to avoid confirm-to-confirm pairing
+    if (nonCurrentPasswordInputs.length === 2) {
+      const other = nonCurrentPasswordInputs.find(
+        (input) => input !== field.element,
+      );
+      return other ?? null;
+    }
+
+    return null;
   }
 
   // If the field is a main password field, find its confirm field
   const confirmField = findConfirmPasswordField(passwordInputs, field.element);
   if (confirmField) return confirmField;
 
-  // Fallback: if there are exactly 2 password fields, return the other one
-  if (passwordInputs.length === 2) {
-    return passwordInputs[0] === field.element
-      ? passwordInputs[1]
-      : passwordInputs[0];
+  // Fallback: if there are exactly 2 non-current-password fields, return the other one
+  if (nonCurrentPasswordInputs.length === 2) {
+    return nonCurrentPasswordInputs[0] === field.element
+      ? nonCurrentPasswordInputs[1]
+      : nonCurrentPasswordInputs[0];
   }
 
   return null;

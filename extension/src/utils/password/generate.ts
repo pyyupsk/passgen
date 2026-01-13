@@ -9,6 +9,12 @@ import {
 } from "@/constants";
 import { shuffle } from "@/utils/password/shuffle";
 
+const getRandomChar = (charSet: string): string => {
+  const randomValue = new Uint32Array(1);
+  crypto.getRandomValues(randomValue);
+  return charSet[randomValue[0]! % charSet.length]!; // NOSONAR
+};
+
 export const generatePassword = (
   length: number,
   characters: CharacterSet,
@@ -23,26 +29,54 @@ export const generatePassword = (
     );
   }
 
+  // Build charset and track enabled sets
+  const enabledSets: string[] = [];
   let charset = "";
-  if (characters.uppercase) charset += UPPERCASE;
-  if (characters.lowercase) charset += LOWERCASE;
-  if (characters.numbers) charset += NUMBERS;
-  if (characters.symbols) charset += SYMBOLS;
+
+  if (characters.uppercase) {
+    charset += UPPERCASE;
+    enabledSets.push(UPPERCASE);
+  }
+  if (characters.lowercase) {
+    charset += LOWERCASE;
+    enabledSets.push(LOWERCASE);
+  }
+  if (characters.numbers) {
+    charset += NUMBERS;
+    enabledSets.push(NUMBERS);
+  }
+  if (characters.symbols) {
+    charset += SYMBOLS;
+    enabledSets.push(SYMBOLS);
+  }
 
   // Validate charset
   if (charset.length === 0) {
     throw new RangeError("At least one character set must be enabled");
   }
 
-  let password = "";
-
-  const randomValues = new Uint32Array(length);
-  crypto.getRandomValues(randomValues);
-
-  for (let i = 0; i < length; i++) {
-    const randomIndex = randomValues[i]! % charset.length; // NOSONAR
-    password += charset[randomIndex];
+  // Validate length can accommodate all enabled sets
+  if (length < enabledSets.length) {
+    throw new RangeError(
+      `Password length must be at least ${enabledSets.length} to include all enabled character sets`,
+    );
   }
 
-  return shuffle(password);
+  // Guarantee at least one character from each enabled set
+  const guaranteed: string[] = [];
+  for (const charSet of enabledSets) {
+    guaranteed.push(getRandomChar(charSet));
+  }
+
+  // Generate remaining characters from the combined charset
+  const remainingLength = length - guaranteed.length;
+  const randomValues = new Uint32Array(remainingLength);
+  crypto.getRandomValues(randomValues);
+
+  for (let i = 0; i < remainingLength; i++) {
+    const randomIndex = randomValues[i]! % charset.length; // NOSONAR
+    guaranteed.push(charset[randomIndex]!); // NOSONAR
+  }
+
+  return shuffle(guaranteed.join(""));
 };
