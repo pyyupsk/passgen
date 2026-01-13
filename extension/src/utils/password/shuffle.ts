@@ -1,4 +1,9 @@
 export const shuffle = (password: string): string => {
+  // Early return for empty or single-character passwords
+  if (password.length <= 1) {
+    return password;
+  }
+
   const array = password.split("");
 
   const randomValues = new Uint32Array(array.length);

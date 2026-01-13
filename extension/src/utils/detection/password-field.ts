@@ -35,6 +35,18 @@ const isVisible = (element: HTMLInputElement): boolean => {
 
 const getContext = (element: HTMLInputElement): PasswordFieldContext => {
   const autocomplete = element.getAttribute("autocomplete")?.toLowerCase();
+  const name = element.name?.toLowerCase() || "";
+  const id = element.id?.toLowerCase() || "";
+  const placeholder = element.placeholder?.toLowerCase() || "";
+
+  // Check for confirm password patterns first (even if autocomplete="new-password")
+  if (
+    CONFIRM_KEYWORDS.some(
+      (kw) => name.includes(kw) || id.includes(kw) || placeholder.includes(kw),
+    )
+  ) {
+    return "confirm";
+  }
 
   // Explicit new-password
   if (autocomplete === "new-password") {
@@ -44,19 +56,6 @@ const getContext = (element: HTMLInputElement): PasswordFieldContext => {
   // Explicit current-password - exclude login forms
   if (autocomplete === "current-password") {
     return "unknown";
-  }
-
-  const name = element.name?.toLowerCase() || "";
-  const id = element.id?.toLowerCase() || "";
-  const placeholder = element.placeholder?.toLowerCase() || "";
-
-  // Check for confirm password patterns
-  if (
-    CONFIRM_KEYWORDS.some(
-      (kw) => name.includes(kw) || id.includes(kw) || placeholder.includes(kw),
-    )
-  ) {
-    return "confirm";
   }
 
   // Check form context for signup patterns

@@ -25,12 +25,38 @@ const matchesConfirmPattern = (element: HTMLInputElement): boolean => {
   );
 };
 
+const isCurrentPassword = (element: HTMLInputElement): boolean => {
+  return (
+    element.getAttribute("autocomplete")?.toLowerCase() === "current-password"
+  );
+};
+
+const isNewPassword = (element: HTMLInputElement): boolean => {
+  return element.getAttribute("autocomplete")?.toLowerCase() === "new-password";
+};
+
 const findMainPasswordField = (
   inputs: NodeListOf<HTMLInputElement>,
   excludeElement: HTMLInputElement,
 ): HTMLInputElement | null => {
+  // First pass: prefer inputs with autocomplete="new-password"
   for (const input of inputs) {
-    if (input !== excludeElement && !matchesConfirmPattern(input)) {
+    if (
+      input !== excludeElement &&
+      !matchesConfirmPattern(input) &&
+      !isCurrentPassword(input) &&
+      isNewPassword(input)
+    ) {
+      return input;
+    }
+  }
+  // Second pass: accept any non-current-password, non-confirm input
+  for (const input of inputs) {
+    if (
+      input !== excludeElement &&
+      !matchesConfirmPattern(input) &&
+      !isCurrentPassword(input)
+    ) {
       return input;
     }
   }
@@ -41,8 +67,13 @@ const findConfirmPasswordField = (
   inputs: NodeListOf<HTMLInputElement>,
   excludeElement: HTMLInputElement,
 ): HTMLInputElement | null => {
+  // Skip current-password inputs when searching for confirm field
   for (const input of inputs) {
-    if (input !== excludeElement && matchesConfirmPattern(input)) {
+    if (
+      input !== excludeElement &&
+      matchesConfirmPattern(input) &&
+      !isCurrentPassword(input)
+    ) {
       return input;
     }
   }

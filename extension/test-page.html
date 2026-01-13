@@ -128,11 +128,11 @@
       <div class="test-section">
         <h2>
           Test 1: Registration Form
-          <span class="badge expected">Icon Expected</span>
+          <span class="badge expected">Popup on Focus</span>
         </h2>
         <p>
-          Uses <code>autocomplete="new-password"</code> - should show PassGen
-          icon
+          Uses <code>autocomplete="new-password"</code> - PassGen popup appears
+          on focus
         </p>
         <form id="form1" action="javascript:void(0)">
           <label for="email1">Email</label>
@@ -170,9 +170,9 @@
       <div class="test-section">
         <h2>
           Test 2: Signup Form (No autocomplete)
-          <span class="badge expected">Icon Expected</span>
+          <span class="badge expected">Popup on Focus</span>
         </h2>
-        <p>Form has "signup" in action/id - should detect via context</p>
+        <p>Form has "signup" in action/id - PassGen popup appears on focus</p>
         <form id="signup-form" action="/signup" onsubmit="return false;">
           <label for="username2">Username</label>
           <input
@@ -207,11 +207,11 @@
       <div class="test-section">
         <h2>
           Test 3: Login Form
-          <span class="badge excluded">Icon NOT Expected</span>
+          <span class="badge excluded">No Popup</span>
         </h2>
         <p>
-          Uses <code>autocomplete="current-password"</code> - should NOT show
-          icon
+          Uses <code>autocomplete="current-password"</code> - PassGen popup
+          should NOT appear
         </p>
         <form id="form3" action="javascript:void(0)">
           <label for="email3">Email</label>
@@ -240,9 +240,9 @@
       <div class="test-section">
         <h2>
           Test 4: Register Form (Name Pattern)
-          <span class="badge expected">Icon Expected</span>
+          <span class="badge expected">Popup on Focus</span>
         </h2>
-        <p>Field has "register" in name - should detect via pattern</p>
+        <p>Field has "register" in name - PassGen popup appears on focus</p>
         <form id="form4" action="javascript:void(0)">
           <label for="email4">Email</label>
           <input
@@ -268,9 +268,12 @@
       <!-- Test 5: Dynamic form (loaded after page) -->
       <div class="test-section">
         <h2>
-          Test 5: Dynamic Form <span class="badge expected">Icon Expected</span>
+          Test 5: Dynamic Form
+          <span class="badge expected">Popup on Focus</span>
         </h2>
-        <p>Form added dynamically - tests MutationObserver</p>
+        <p>
+          Form added dynamically - tests MutationObserver for focus-based popup
+        </p>
         <button
           onclick="addDynamicForm()"
           style="
@@ -294,7 +297,6 @@
       document.querySelectorAll("form").forEach((form) => {
         form.addEventListener("submit", (e) => {
           e.preventDefault();
-          const formId = form.id;
           const statusEl = form.querySelector(".status");
           const passwordInput = form.querySelector('input[type="password"]');
           if (statusEl && passwordInput) {

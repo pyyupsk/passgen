@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 
 import type { PasswordField } from "@/types/PasswordField";
 
@@ -20,6 +20,7 @@ const primaryHover = ref(false);
 const secondaryHover = ref(false);
 const iconHover = ref(false);
 const closeHover = ref(false);
+let copyTimeoutId: null | ReturnType<typeof setTimeout> = null;
 
 const handleFill = (): void => {
   props.onFill(password.value);
@@ -28,12 +29,22 @@ const handleFill = (): void => {
 const handleCopy = async (): Promise<void> => {
   const success = await copyToClipboard(password.value);
   if (success) {
+    if (copyTimeoutId !== null) {
+      clearTimeout(copyTimeoutId);
+    }
     copyFeedback.value = true;
-    setTimeout(() => {
+    copyTimeoutId = setTimeout(() => {
       copyFeedback.value = false;
+      copyTimeoutId = null;
     }, COPY_FEEDBACK_DURATION_MS);
   }
 };
+
+onBeforeUnmount(() => {
+  if (copyTimeoutId !== null) {
+    clearTimeout(copyTimeoutId);
+  }
+});
 
 const handleRegenerate = (): void => {
   regenerate();
@@ -153,6 +164,7 @@ const styles = {
       <h3 :style="styles.title">PassGen</h3>
       <button
         type="button"
+        aria-label="Close"
         :style="{
           ...styles.closeBtn,
           ...(closeHover ? styles.closeBtnHover : {}),
@@ -218,6 +230,7 @@ const styles = {
       </button>
       <button
         type="button"
+        aria-label="Regenerate password"
         :style="{
           ...styles.btnBase,
           ...styles.btnIcon,

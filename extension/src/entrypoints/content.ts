@@ -9,6 +9,10 @@ import { detectPasswordFields } from "@/utils/detection/password-field";
 let detectedFields: PasswordField[] = [];
 let activePopup: null | { container: HTMLElement; unmount: () => void } = null;
 let activeField: null | PasswordField = null;
+let popupListenerTimer: null | ReturnType<typeof setTimeout> = null;
+
+// WeakMap to store the latest PasswordField for each input element
+const fieldMap = new WeakMap<HTMLInputElement, PasswordField>();
 
 const showPopup = (field: PasswordField): void => {
   // Don't reopen if already showing for this field
@@ -27,14 +31,12 @@ const showPopup = (field: PasswordField): void => {
   // Create shadow root for style isolation
   const shadow = container.attachShadow({ mode: "open" });
 
-  // Add styles to shadow root
+  // Add styles to shadow root (using system fonts to avoid CSP issues)
   const style = document.createElement("style");
   style.textContent = `
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
     :host {
       all: initial;
-      font-family: 'Inter', system-ui, sans-serif;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     }
   `;
   shadow.appendChild(style);
@@ -87,13 +89,20 @@ const showPopup = (field: PasswordField): void => {
     unmount: () => app.unmount(),
   };
 
-  // Add click outside listener
-  setTimeout(() => {
+  // Add click outside listener with proper timer management
+  popupListenerTimer = setTimeout(() => {
     document.addEventListener("mousedown", handleClickOutside);
+    popupListenerTimer = null;
   }, 0);
 };
 
 const closePopup = (): void => {
+  // Clear pending listener timer if it exists
+  if (popupListenerTimer !== null) {
+    clearTimeout(popupListenerTimer);
+    popupListenerTimer = null;
+  }
+
   if (activePopup) {
     activePopup.unmount();
     activePopup.container.remove();
@@ -132,23 +141,34 @@ const fillPassword = (field: PasswordField, password: string): void => {
 };
 
 const setInputValue = (input: HTMLInputElement, value: string): void => {
-  // Set value
-  input.value = value;
+  // Use the native HTMLInputElement prototype setter for React compatibility
+  const descriptor = Object.getOwnPropertyDescriptor(
+    HTMLInputElement.prototype,
+    "value",
+  );
+  if (descriptor?.set) {
+    descriptor.set.call(input, value);
+  } else {
+    // Fallback to direct assignment
+    input.value = value;
+  }
 
   // Dispatch events to trigger form validation
   input.dispatchEvent(new Event("input", { bubbles: true }));
   input.dispatchEvent(new Event("change", { bubbles: true }));
 };
 
-const attachFieldListener = (field: PasswordField): void => {
-  const input = field.element;
-
+const attachFieldListener = (input: HTMLInputElement): void => {
   // Mark as processed to avoid duplicate listeners
   if (input.dataset.passgenAttached) return;
   input.dataset.passgenAttached = "true";
 
   input.addEventListener("focus", () => {
-    showPopup(field);
+    // Look up the latest PasswordField from the WeakMap
+    const field = fieldMap.get(input);
+    if (field) {
+      showPopup(field);
+    }
   });
 };
 
@@ -156,8 +176,10 @@ const scanAndAttachListeners = (): void => {
   detectedFields = detectPasswordFields();
   linkPairedFields(detectedFields);
 
+  // Update the WeakMap with the latest field data
   for (const field of detectedFields) {
-    attachFieldListener(field);
+    fieldMap.set(field.element, field);
+    attachFieldListener(field.element);
   }
 };
 

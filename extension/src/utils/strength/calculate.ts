@@ -1,5 +1,6 @@
 import { zxcvbn, zxcvbnOptions } from "@zxcvbn-ts/core";
-import { translations } from "@zxcvbn-ts/language-en";
+import * as zxcvbnCommon from "@zxcvbn-ts/language-common";
+import * as zxcvbnEn from "@zxcvbn-ts/language-en";
 
 import type { Strength } from "@/types/Strength";
 
@@ -7,7 +8,12 @@ import { MAX_SCORE } from "@/constants";
 import { determineRating } from "@/utils/strength/rating";
 
 zxcvbnOptions.setOptions({
-  translations: translations,
+  dictionary: {
+    ...zxcvbnCommon.dictionary,
+    ...zxcvbnEn.dictionary,
+  },
+  graphs: zxcvbnCommon.adjacencyGraphs,
+  translations: zxcvbnEn.translations,
 });
 
 export const calculateStrength = (password: string): Strength => {
