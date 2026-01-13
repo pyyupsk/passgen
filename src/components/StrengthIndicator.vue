@@ -1,47 +1,67 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from "vue";
 
-import type { Strength } from '@/types/Strength'
+import type { Strength } from "@/types/Strength";
 
 const props = defineProps<{
-  strength: Strength
-}>()
+  strength: Strength;
+}>();
 
 // Memoized strength color calculation
 const getStrengthColor = computed(() => {
   switch (props.strength.score) {
     case 0:
-      return 'text-red-500'
+      return "bg-red-500";
     case 1:
-      return 'text-amber-500'
+      return "bg-amber-500";
     case 2:
-      return 'text-yellow-500'
+      return "bg-yellow-500";
     case 3:
-      return 'text-lime-500'
+      return "bg-lime-500";
     case 4:
-      return 'text-emerald-500'
+      return "bg-emerald-500";
     default:
-      return 'text-red-500'
+      return "bg-red-500";
   }
-})
+});
+
+const getTextColor = computed(() => {
+  switch (props.strength.score) {
+    case 0:
+      return "text-red-500";
+    case 1:
+      return "text-amber-500";
+    case 2:
+      return "text-yellow-500";
+    case 3:
+      return "text-lime-500";
+    case 4:
+      return "text-emerald-500";
+    default:
+      return "text-red-500";
+  }
+});
 </script>
 
 <template>
-  <div class="space-y-1.5">
-    <div class="space-y-3">
-      <label for="strength" class="label flex justify-between">
+  <div class="space-y-2">
+    <div class="space-y-2">
+      <label for="strength" class="flex justify-between text-sm font-medium">
         <span>Password Strength</span>
-        <span class="text-sm font-medium">{{ props.strength.rating }}</span>
+        <span :class="getTextColor" class="font-medium">{{
+          props.strength.rating
+        }}</span>
       </label>
-      <progress
-        id="strength"
-        class="progress"
-        :class="getStrengthColor"
-        :value="props.strength.percentage"
-        max="100"
-      />
+      <div class="bg-secondary h-2 w-full overflow-hidden rounded-full">
+        <div
+          id="strength"
+          class="h-full transition-all duration-300"
+          :class="getStrengthColor"
+          :style="{ width: `${props.strength.percentage}%` }"
+        />
+      </div>
     </div>
-    <div class="text-sm">
+    <div class="text-muted-foreground text-sm">
       <span class="font-medium">Estimated cracking time: </span>
       <span class="capitalize">{{ props.strength.cracktime }}</span>
     </div>

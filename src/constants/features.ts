@@ -1,29 +1,30 @@
-import type { Component } from 'vue'
+import type { Component } from "vue";
 
-import { Lock, Key, AlertTriangle } from 'lucide-vue-next'
+import { AlertTriangle, Key, Lock } from "lucide-vue-next";
 
 type Feature = {
-  title: string
-  description: string
-  icon: Component
-}
+  description: string;
+  icon: Component;
+  title: string;
+};
 
 export const FEATURES: Feature[] = [
   {
-    title: 'Secure by Design',
     description:
-      'All password generation happens locally in your browser. Your passwords are never stored or transmitted.',
+      "All password generation happens locally in your browser. Your passwords are never stored or transmitted.",
     icon: Lock,
+    title: "Secure by Design",
   },
   {
-    title: 'Customizable Options',
     description:
-      'Tailor your passwords with adjustable length and character types to meet specific requirements.',
+      "Tailor your passwords with adjustable length and character types to meet specific requirements.",
     icon: Key,
+    title: "Customizable Options",
   },
   {
-    title: 'Strength Analysis',
-    description: 'Get real-time feedback on password strength and estimated time to crack.',
+    description:
+      "Get real-time feedback on password strength and estimated time to crack.",
     icon: AlertTriangle,
+    title: "Strength Analysis",
   },
-]
+];

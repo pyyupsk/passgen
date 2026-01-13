@@ -1,6 +1,6 @@
 export type Strength = {
-  score: number
-  percentage: number
-  rating: string
-  cracktime: string
-}
+  cracktime: string;
+  percentage: number;
+  rating: string;
+  score: number;
+};

@@ -1,66 +1,61 @@
-import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
-import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
-import oxlint from 'eslint-plugin-oxlint'
-import perfectionist from 'eslint-plugin-perfectionist'
-import pluginVue from 'eslint-plugin-vue'
+import { defineConfig } from "eslint/config";
+import eslint from "@eslint/js";
+import perfectionist from "eslint-plugin-perfectionist";
+import prettier from "eslint-plugin-prettier/recommended";
+import vue from "eslint-plugin-vue";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 
-export default defineConfigWithVueTs(
-  pluginVue.configs['flat/essential'],
-  vueTsConfigs.recommended,
-  oxlint.configs['flat/recommended'],
-  skipFormatting,
-
+const eslintConfig = defineConfig(
+  eslint.configs.recommended,
+  perfectionist.configs["recommended-natural"],
+  tseslint.configs.recommended,
   {
-    name: 'app/files-to-lint',
-    files: ['**/*.{ts,mts,tsx,vue}'],
-  },
-
-  {
-    name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
-  },
-
-  {
-    plugins: {
-      perfectionist,
+    extends: [...vue.configs["flat/recommended"]],
+    files: ["**/*.{ts,vue}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      globals: {
+        ...globals.browser,
+        definePage: "readonly",
+      },
+      parserOptions: {
+        parser: tseslint.parser,
+      },
+      sourceType: "module",
     },
     rules: {
-      'perfectionist/sort-imports': [
-        'error',
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "vue/multi-word-component-names": "off",
+    },
+  },
+  {
+    rules: {
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
         {
-          type: 'natural',
-          order: 'asc',
+          fixStyle: "separate-type-imports",
+          prefer: "type-imports",
         },
       ],
-    },
-  },
-
-  {
-    rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
         {
-          argsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
-      'no-unused-vars': [
-        'warn',
+      "no-unused-vars": [
+        "warn",
         {
-          argsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
           ignoreRestSiblings: true,
         },
       ],
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          prefer: 'type-imports',
-          fixStyle: 'separate-type-imports',
-        },
-      ],
-      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'vue/multi-word-component-names': 'off',
     },
   },
-)
+  prettier,
+);
+
+export default eslintConfig;
