@@ -24,7 +24,7 @@ const CONFIRM_KEYWORDS = [
 ];
 
 const isVisible = (element: HTMLInputElement): boolean => {
-  const style = window.getComputedStyle(element);
+  const style = globalThis.getComputedStyle(element);
   return (
     style.display !== "none" &&
     style.visibility !== "hidden" &&

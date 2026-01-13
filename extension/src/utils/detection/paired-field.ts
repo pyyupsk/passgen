@@ -25,6 +25,30 @@ const matchesConfirmPattern = (element: HTMLInputElement): boolean => {
   );
 };
 
+const findMainPasswordField = (
+  inputs: NodeListOf<HTMLInputElement>,
+  excludeElement: HTMLInputElement,
+): HTMLInputElement | null => {
+  for (const input of inputs) {
+    if (input !== excludeElement && !matchesConfirmPattern(input)) {
+      return input;
+    }
+  }
+  return null;
+};
+
+const findConfirmPasswordField = (
+  inputs: NodeListOf<HTMLInputElement>,
+  excludeElement: HTMLInputElement,
+): HTMLInputElement | null => {
+  for (const input of inputs) {
+    if (input !== excludeElement && matchesConfirmPattern(input)) {
+      return input;
+    }
+  }
+  return null;
+};
+
 export const findPairedField = (
   field: PasswordField,
 ): HTMLInputElement | null => {
@@ -38,21 +62,15 @@ export const findPairedField = (
 
   // If the field itself is a confirm field, find the main password field
   if (field.context === "confirm") {
-    for (const input of passwordInputs) {
-      if (input !== field.element && !matchesConfirmPattern(input)) {
-        return input;
-      }
-    }
+    const mainField = findMainPasswordField(passwordInputs, field.element);
+    if (mainField) return mainField;
   }
 
   // If the field is a main password field, find its confirm field
-  for (const input of passwordInputs) {
-    if (input !== field.element && matchesConfirmPattern(input)) {
-      return input;
-    }
-  }
+  const confirmField = findConfirmPasswordField(passwordInputs, field.element);
+  if (confirmField) return confirmField;
 
-  // Fallback: if there are exactly 2 password fields and one is ours, return the other
+  // Fallback: if there are exactly 2 password fields, return the other one
   if (passwordInputs.length === 2) {
     return passwordInputs[0] === field.element
       ? passwordInputs[1]

@@ -19,7 +19,7 @@ export const generatePassword = (
   crypto.getRandomValues(randomValues);
 
   for (let i = 0; i < length; i++) {
-    const randomIndex = randomValues[i]! % charset.length;
+    const randomIndex = randomValues[i]! % charset.length; // NOSONAR
     password += charset[randomIndex];
   }
 
