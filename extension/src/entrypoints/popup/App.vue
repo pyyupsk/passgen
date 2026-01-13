@@ -1,30 +1,39 @@
 <script lang="ts" setup>
-import HelloWorld from "@/components/HelloWorld.vue";
+// PassGen browser extension popup
 </script>
 
 <template>
-  <div>
-    <a href="https://wxt.dev" target="_blank">
-      <img src="/wxt.svg" class="logo" alt="WXT logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="@/assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="popup">
+    <h1>PassGen</h1>
+    <p>Generate strong passwords for registration forms.</p>
+    <p class="hint">Look for the lock icon on password fields.</p>
   </div>
-  <HelloWorld msg="WXT + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.popup {
+  min-width: 200px;
+  padding: 16px;
+  font-family: "Inter", system-ui, sans-serif;
+  background: #1a1a1a;
+  color: #fafafa;
+  text-align: center;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #54bc4ae0);
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #a1a1a1;
+}
+
+.hint {
+  font-size: 12px;
+  color: #737373;
 }
 </style>

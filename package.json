@@ -27,9 +27,9 @@
   "scripts": {
     "build": "vue-tsc -b && vite build",
     "dev": "vite",
-    "format": "prettier --write --list-different --cache .",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
+    "format": "prettier --write --list-different --cache --ignore-path .gitignore --ignore-path .git/info/exclude --ignore-path .prettierignore .",
+    "lint": "eslint src extension/src",
+    "lint:fix": "eslint src extension/src --fix",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
   },

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PassGen Extension Test Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0a0a0a;
+      color: #fafafa;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      color: #a1a1a1;
+      margin-bottom: 40px;
+    }
+    .test-section {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .test-section h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .test-section p {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    .test-section code {
+      background: #333;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    label {
+      font-size: 14px;
+      color: #ccc;
+    }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #0a0a0a;
+      color: #fafafa;
+      font-size: 14px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #555;
+    }
+    button[type="submit"] {
+      padding: 10px 20px;
+      background: #fafafa;
+      color: #0a0a0a;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    button[type="submit"]:hover {
+      background: #e5e5e5;
+    }
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      background: #1a2e1a;
+      border: 1px solid #2d4a2d;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #4ade80;
+      display: none;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #2563eb;
+      color: white;
+      border-radius: 4px;
+      font-size: 11px;
+      margin-left: 8px;
+    }
+    .badge.expected {
+      background: #16a34a;
+    }
+    .badge.excluded {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PassGen Extension Test Page</h1>
+    <p class="subtitle">Test the password suggestion extension on various form types</p>
+
+    <!-- Test 1: Explicit new-password -->
+    <div class="test-section">
+      <h2>Test 1: Registration Form <span class="badge expected">Icon Expected</span></h2>
+      <p>Uses <code>autocomplete="new-password"</code> - should show PassGen icon</p>
+      <form id="form1" action="javascript:void(0)">
+        <label for="email1">Email</label>
+        <input type="email" id="email1" name="email" placeholder="you@example.com">
+
+        <label for="password1">Password</label>
+        <input type="password" id="password1" name="password" autocomplete="new-password" placeholder="Create a password">
+
+        <label for="confirm1">Confirm Password</label>
+        <input type="password" id="confirm1" name="confirm_password" autocomplete="new-password" placeholder="Confirm your password">
+
+        <button type="submit">Create Account</button>
+        <div class="status" id="status1"></div>
+      </form>
+    </div>
+
+    <!-- Test 2: Signup form context -->
+    <div class="test-section">
+      <h2>Test 2: Signup Form (No autocomplete) <span class="badge expected">Icon Expected</span></h2>
+      <p>Form has "signup" in action/id - should detect via context</p>
+      <form id="signup-form" action="/signup" onsubmit="return false">
+        <label for="username2">Username</label>
+        <input type="text" id="username2" name="username" placeholder="Choose a username">
+
+        <label for="password2">Password</label>
+        <input type="password" id="password2" name="password" placeholder="Create a password">
+
+        <label for="password2_confirm">Repeat Password</label>
+        <input type="password" id="password2_confirm" name="password_confirm" placeholder="Repeat your password">
+
+        <button type="submit">Sign Up</button>
+        <div class="status" id="status2"></div>
+      </form>
+    </div>
+
+    <!-- Test 3: Login form - should be excluded -->
+    <div class="test-section">
+      <h2>Test 3: Login Form <span class="badge excluded">Icon NOT Expected</span></h2>
+      <p>Uses <code>autocomplete="current-password"</code> - should NOT show icon</p>
+      <form id="form3" action="javascript:void(0)">
+        <label for="email3">Email</label>
+        <input type="email" id="email3" name="email" placeholder="you@example.com">
+
+        <label for="password3">Password</label>
+        <input type="password" id="password3" name="password" autocomplete="current-password" placeholder="Enter your password">
+
+        <button type="submit">Sign In</button>
+        <div class="status" id="status3"></div>
+      </form>
+    </div>
+
+    <!-- Test 4: Register with name pattern -->
+    <div class="test-section">
+      <h2>Test 4: Register Form (Name Pattern) <span class="badge expected">Icon Expected</span></h2>
+      <p>Field has "register" in name - should detect via pattern</p>
+      <form id="form4" action="javascript:void(0)">
+        <label for="email4">Email</label>
+        <input type="email" id="email4" name="email" placeholder="you@example.com">
+
+        <label for="register_password">Password</label>
+        <input type="password" id="register_password" name="register_password" placeholder="Create a password">
+
+        <button type="submit">Register</button>
+        <div class="status" id="status4"></div>
+      </form>
+    </div>
+
+    <!-- Test 5: Dynamic form (loaded after page) -->
+    <div class="test-section">
+      <h2>Test 5: Dynamic Form <span class="badge expected">Icon Expected</span></h2>
+      <p>Form added dynamically - tests MutationObserver</p>
+      <button onclick="addDynamicForm()" style="padding: 8px 16px; background: #333; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 16px;">
+        Add Dynamic Form
+      </button>
+      <div id="dynamic-container"></div>
+    </div>
+  </div>
+
+  <script>
+    // Show status when form is submitted
+    document.querySelectorAll('form').forEach(form => {
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formId = form.id;
+        const statusEl = form.querySelector('.status');
+        const passwordInput = form.querySelector('input[type="password"]');
+        if (statusEl && passwordInput) {
+          statusEl.style.display = 'block';
+          statusEl.textContent = `Password filled: ${passwordInput.value ? '✓ ' + passwordInput.value.substring(0, 8) + '...' : '(empty)'}`;
+        }
+      });
+    });
+
+    // Add dynamic form
+    function addDynamicForm() {
+      const container = document.getElementById('dynamic-container');
+      container.innerHTML = `
+        <form id="dynamic-form" action="javascript:void(0)" style="margin-top: 16px;">
+          <label for="dynamic_password">Password</label>
+          <input type="password" id="dynamic_password" name="new_password" autocomplete="new-password" placeholder="Create a password">
+          <button type="submit">Submit</button>
+          <div class="status" id="status5"></div>
+        </form>
+      `;
+
+      // Add submit handler
+      document.getElementById('dynamic-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const statusEl = document.getElementById('status5');
+        const passwordInput = document.getElementById('dynamic_password');
+        if (statusEl && passwordInput) {
+          statusEl.style.display = 'block';
+          statusEl.textContent = `Password filled: ${passwordInput.value ? '✓ ' + passwordInput.value.substring(0, 8) + '...' : '(empty)'}`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
