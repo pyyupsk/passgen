@@ -4,7 +4,7 @@ import { translations } from "@zxcvbn-ts/language-en";
 import type { Strength } from "@/pages/_types/Strength";
 
 import { MAX_SCORE } from "@/pages/_constants";
-import { determineRating } from "@/pages/_utils/determine-rating";
+import { determineRating } from "@/pages/_utils/strength/rating";
 
 zxcvbnOptions.setOptions({
   translations: translations,

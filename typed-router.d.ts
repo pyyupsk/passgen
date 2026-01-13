@@ -30,13 +30,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/_components/StrengthIndicator': RouteRecordInfo<
-      '/_components/StrengthIndicator',
-      '/_components/StrengthIndicator',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
   }
 
   /**
@@ -53,12 +46,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/index.vue': {
       routes:
         | '/'
-      views:
-        | never
-    }
-    'src/pages/_components/StrengthIndicator.vue': {
-      routes:
-        | '/_components/StrengthIndicator'
       views:
         | never
     }

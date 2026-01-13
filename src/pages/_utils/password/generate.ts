@@ -1,7 +1,7 @@
 import type { CharacterSet } from "@/pages/_types/CharacterSet";
 
 import { LOWERCASE, NUMBERS, SYMBOLS, UPPERCASE } from "@/pages/_constants";
-import { shuffle } from "@/pages/_utils/shuffle";
+import { shuffle } from "@/pages/_utils/password/shuffle";
 
 export const generatePassword = (
   length: number,

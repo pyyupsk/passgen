@@ -15,20 +15,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FEATURES } from "@/pages/_constants";
-import { calculateStrength } from "@/pages/_utils/calculate-strength";
-import { generatePassword } from "@/pages/_utils/generate-password";
-
-import StrengthIndicator from "./_components/StrengthIndicator.vue";
+import { generatePassword } from "@/pages/_utils/password/generate";
+import { calculateStrength } from "@/pages/_utils/strength/calculate";
+import {
+  getStrengthBgColor,
+  getStrengthTextColor,
+} from "@/pages/_utils/strength/colors";
 
 const { copied, copy } = useClipboard();
 
-// The password to be generated
 const password = ref<string>("");
-
-// Using a single number rather than an array for better performance
 const passwordLength = ref<number>(16);
-
-// The character set to use when generating the password
 const characters = ref<CharacterSet>({
   lowercase: true,
   numbers: true,
@@ -36,29 +33,30 @@ const characters = ref<CharacterSet>({
   uppercase: true,
 });
 
-// Memoized strength calculation
 const strength = computed(() => calculateStrength(password.value));
+const strengthBgColor = computed(() =>
+  getStrengthBgColor(strength.value.score),
+);
+const strengthTextColor = computed(() =>
+  getStrengthTextColor(strength.value.score),
+);
 
-// Generate a new password
 const handleGenerate = useDebounceFn(() => {
   password.value = generatePassword(passwordLength.value, characters.value);
 }, 100);
 
-// Copy the password to the clipboard using VueUse
 const copyToClipboard = async () => {
   if (!password.value) return;
 
   await copy(password.value);
 };
 
-// Generate a new password when the password length or character set changes
 watchEffect(() => {
   if (passwordLength.value && Object.values(characters.value).some(Boolean)) {
     handleGenerate();
   }
 });
 
-// Generate initial password on mount
 onMounted(() => {
   password.value = generatePassword(passwordLength.value, characters.value);
 });
@@ -117,18 +115,18 @@ onMounted(() => {
               aria-label="Generated password"
             />
             <button
-              class="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer transition-colors"
+              class="text-muted-foreground hover:text-foreground absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer transition-colors"
               :disabled="!password"
               aria-label="Copy password to clipboard"
               @click="copyToClipboard"
             >
               <Check
                 class="text-chart-2 absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 transition-all"
-                :class="copied ? 'icon-visible' : 'icon-hidden'"
+                :class="copied ? 'scale-100 opacity-100' : 'scale-0 opacity-0'"
               />
               <Copy
                 class="absolute top-1/2 left-1/2 size-4 -translate-x-1/2 -translate-y-1/2 transition-all"
-                :class="copied ? 'icon-hidden' : 'icon-visible'"
+                :class="copied ? 'scale-0 opacity-0' : 'scale-100 opacity-100'"
               />
               <span class="sr-only">{{ copied ? "Copied" : "Copy" }}</span>
             </button>
@@ -154,8 +152,8 @@ onMounted(() => {
           </div>
 
           <!-- Character types selection -->
-          <div class="space-y-2">
-            <label class="text-sm font-medium">Character Types</label>
+          <fieldset class="space-y-2">
+            <legend class="text-sm font-medium">Character Types</legend>
             <div
               class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between"
             >
@@ -177,14 +175,34 @@ onMounted(() => {
                 >
               </div>
             </div>
-          </div>
+          </fieldset>
 
           <!-- Password strength indicator -->
-          <StrengthIndicator
-            v-if="password"
-            :key="password"
-            :strength="strength"
-          />
+          <div class="space-y-2">
+            <div class="space-y-2">
+              <label
+                for="strength"
+                class="flex justify-between text-sm font-medium"
+              >
+                <span>Password Strength</span>
+                <span :class="strengthTextColor" class="font-medium">{{
+                  strength.rating
+                }}</span>
+              </label>
+              <div class="bg-secondary h-2 w-full overflow-hidden rounded-full">
+                <div
+                  id="strength"
+                  class="h-full transition-all duration-300"
+                  :class="strengthBgColor"
+                  :style="{ width: `${strength.percentage}%` }"
+                />
+              </div>
+            </div>
+            <div class="text-muted-foreground text-sm">
+              <span class="font-medium">Estimated cracking time: </span>
+              <span class="capitalize">{{ strength.cracktime }}</span>
+            </div>
+          </div>
         </CardContent>
 
         <CardFooter>
@@ -193,7 +211,7 @@ onMounted(() => {
             aria-label="Generate new password"
             @click="handleGenerate"
           >
-            <RefreshCw class="size-4" />
+            <RefreshCw />
             Generate New Password
           </Button>
         </CardFooter>
@@ -201,13 +219,3 @@ onMounted(() => {
     </section>
   </main>
 </template>
-
-<style scoped lang="css">
-.icon-visible {
-  @apply scale-100 opacity-100;
-}
-
-.icon-hidden {
-  @apply scale-0 opacity-0;
-}
-</style>
