@@ -2,7 +2,7 @@
 
 Generate strong, secure passwords with this modern, browser-based password generator tool. Built with Vue 3 and TypeScript, this application provides a user-friendly interface for creating customizable passwords with real-time strength analysis.
 
-![Password Generator Screenshot](public/og-image.png)
+![Password Generator Screenshot](https://github.com/pyyupsk/passgen/blob/main/public/og-image.png)
 
 ## ✨ Features
 
@@ -11,6 +11,31 @@ Generate strong, secure passwords with this modern, browser-based password gener
 - **Strength Analysis**: Get real-time feedback on password strength and estimated time to crack using the zxcvbn library.
 
 - **Modern UI**: Clean, responsive interface built with Vue 3, TypeScript, and Tailwind CSS.
+
+## 🧩 Browser Extension
+
+Generate secure passwords directly in registration forms with our browser extension.
+
+### Features
+
+- **Auto-Detection**: Automatically detects password fields on registration forms
+- **One-Click Fill**: Generate and fill passwords with a single click
+- **Strength Indicator**: Real-time password strength analysis
+- **Shadow DOM Isolation**: No style conflicts with existing websites
+
+### Installation
+
+| Browser | Link                                                                               |
+| ------- | ---------------------------------------------------------------------------------- |
+| Chrome  | Manual install only ([sponsor me](https://github.com/sponsors/pyyupsk) to publish) |
+| Firefox | [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/pyyupsk-passgen/) |
+| Manual  | [Download from Releases](https://github.com/pyyupsk/passgen/releases/latest)       |
+
+### Manual Installation
+
+1. Download the extension zip for your browser from [Releases](https://github.com/pyyupsk/passgen/releases/latest)
+2. **Chrome**: Go to `chrome://extensions`, enable Developer Mode, and drag the zip file
+3. **Firefox**: Go to `about:addons`, click the gear icon, and select "Install Add-on From File"
 
 ## 🚀 Getting Started
 
@@ -25,7 +50,7 @@ Generate strong, secure passwords with this modern, browser-based password gener
 
    ```bash
    git clone https://github.com/pyyupsk/passgen.git
-   cd papassgen
+   cd passgen
    ```
 
 2. Install dependencies:
