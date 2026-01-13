@@ -16,6 +16,10 @@ const props = defineProps<{
 
 const { password, regenerate, strength } = usePasswordGenerator();
 const copyFeedback = ref(false);
+const primaryHover = ref(false);
+const secondaryHover = ref(false);
+const iconHover = ref(false);
+const closeHover = ref(false);
 
 const handleFill = (): void => {
   props.onFill(password.value);
@@ -34,19 +38,128 @@ const handleCopy = async (): Promise<void> => {
 const handleRegenerate = (): void => {
   regenerate();
 };
+
+// Inline styles
+const styles = {
+  actions: {
+    display: "flex",
+    gap: "8px",
+  },
+  btnBase: {
+    alignItems: "center",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    display: "flex",
+    fontFamily: "inherit",
+    fontSize: "13px",
+    fontWeight: "500",
+    justifyContent: "center",
+    padding: "8px 16px",
+    transition: "all 0.15s ease",
+  },
+  btnIcon: {
+    background: "#27272a",
+    border: "1px solid #3f3f46",
+    color: "#a1a1aa",
+    height: "36px",
+    padding: "0",
+    width: "36px",
+  },
+  btnIconHover: {
+    background: "#3f3f46",
+    color: "#fafafa",
+  },
+  btnPrimary: {
+    background: "#fafafa",
+    color: "#09090b",
+    flex: "1",
+  },
+  btnPrimaryHover: {
+    background: "#e4e4e7",
+  },
+  btnSecondary: {
+    background: "#27272a",
+    border: "1px solid #3f3f46",
+    color: "#fafafa",
+    flex: "1",
+  },
+  btnSecondaryHover: {
+    background: "#3f3f46",
+  },
+  closeBtn: {
+    alignItems: "center",
+    background: "transparent",
+    border: "none",
+    borderRadius: "6px",
+    color: "#71717a",
+    cursor: "pointer",
+    display: "flex",
+    height: "28px",
+    justifyContent: "center",
+    padding: "0",
+    transition: "all 0.15s ease",
+    width: "28px",
+  },
+  closeBtnHover: {
+    background: "#27272a",
+    color: "#fafafa",
+  },
+  container: {
+    background: "#0a0a0a",
+    border: "1px solid #27272a",
+    borderRadius: "12px",
+    boxShadow:
+      "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+    color: "#fafafa",
+    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    padding: "16px",
+    width: "280px",
+  },
+  header: {
+    alignItems: "center",
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "12px",
+  },
+  passwordDisplay: {
+    background: "#18181b",
+    border: "1px solid #27272a",
+    borderRadius: "8px",
+    color: "#fafafa",
+    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+    fontSize: "13px",
+    lineHeight: "1.5",
+    marginBottom: "12px",
+    padding: "12px",
+    wordBreak: "break-all" as const,
+  },
+  strengthSection: {
+    marginBottom: "16px",
+  },
+  title: {
+    color: "#fafafa",
+    fontSize: "14px",
+    fontWeight: "600",
+    margin: "0",
+  },
+};
 </script>
 
 <template>
-  <div
-    class="pg:w-72 pg:rounded-lg pg:border pg:border-border pg:bg-background pg:p-4 pg:shadow-xl pg:font-sans"
-  >
+  <div :style="styles.container">
     <!-- Header -->
-    <div class="pg:mb-3 pg:flex pg:items-center pg:justify-between">
-      <h3 class="pg:text-sm pg:font-semibold pg:text-foreground">PassGen</h3>
+    <div :style="styles.header">
+      <h3 :style="styles.title">PassGen</h3>
       <button
         type="button"
-        class="pg:rounded pg:p-1 pg:text-muted-foreground pg:transition-colors hover:pg:bg-muted hover:pg:text-foreground"
+        :style="{
+          ...styles.closeBtn,
+          ...(closeHover ? styles.closeBtnHover : {}),
+        }"
         @click="props.onClose"
+        @mouseenter="closeHover = true"
+        @mouseleave="closeHover = false"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -66,38 +179,54 @@ const handleRegenerate = (): void => {
     </div>
 
     <!-- Password Display -->
-    <div
-      class="pg:mb-3 pg:rounded-md pg:border pg:border-border pg:bg-muted pg:p-3 pg:font-mono pg:text-sm pg:text-foreground pg:break-all"
-    >
+    <div :style="styles.passwordDisplay">
       {{ password }}
     </div>
 
     <!-- Strength Indicator -->
-    <div class="pg:mb-4">
+    <div :style="styles.strengthSection">
       <StrengthIndicator :strength="strength" />
     </div>
 
     <!-- Actions -->
-    <div class="pg:flex pg:gap-2">
+    <div :style="styles.actions">
       <button
         type="button"
-        class="pg:flex-1 pg:rounded-md pg:bg-primary pg:px-3 pg:py-2 pg:text-sm pg:font-medium pg:text-primary-foreground pg:transition-colors hover:pg:bg-primary/90"
+        :style="{
+          ...styles.btnBase,
+          ...styles.btnPrimary,
+          ...(primaryHover ? styles.btnPrimaryHover : {}),
+        }"
         @click="handleFill"
+        @mouseenter="primaryHover = true"
+        @mouseleave="primaryHover = false"
       >
         Fill
       </button>
       <button
         type="button"
-        class="pg:flex-1 pg:rounded-md pg:border pg:border-border pg:bg-secondary pg:px-3 pg:py-2 pg:text-sm pg:font-medium pg:text-secondary-foreground pg:transition-colors hover:pg:bg-secondary/80"
+        :style="{
+          ...styles.btnBase,
+          ...styles.btnSecondary,
+          ...(secondaryHover ? styles.btnSecondaryHover : {}),
+        }"
         @click="handleCopy"
+        @mouseenter="secondaryHover = true"
+        @mouseleave="secondaryHover = false"
       >
         {{ copyFeedback ? "Copied!" : "Copy" }}
       </button>
       <button
         type="button"
-        class="pg:rounded-md pg:border pg:border-border pg:bg-secondary pg:p-2 pg:text-secondary-foreground pg:transition-colors hover:pg:bg-secondary/80"
+        :style="{
+          ...styles.btnBase,
+          ...styles.btnIcon,
+          ...(iconHover ? styles.btnIconHover : {}),
+        }"
         title="Regenerate"
         @click="handleRegenerate"
+        @mouseenter="iconHover = true"
+        @mouseleave="iconHover = false"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -6,38 +6,66 @@ defineProps<{
 }>();
 
 const getStrengthColor = (score: number): string => {
-  const colors = [
-    "var(--color-strength-weak)",
-    "var(--color-strength-fair)",
-    "var(--color-strength-good)",
-    "var(--color-strength-strong)",
-    "var(--color-strength-very-strong)",
-  ];
+  const colors = ["#ef4444", "#f97316", "#eab308", "#22c55e", "#10b981"];
   return colors[score] ?? colors[0];
+};
+
+const styles = {
+  container: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "6px",
+  },
+  crackTime: {
+    color: "#71717a",
+    fontSize: "11px",
+  },
+  header: {
+    alignItems: "center",
+    display: "flex",
+    fontSize: "11px",
+    justifyContent: "space-between",
+  },
+  label: {
+    color: "#71717a",
+  },
+  progressBar: {
+    borderRadius: "9999px",
+    height: "100%",
+    transition: "all 0.3s ease",
+  },
+  progressTrack: {
+    background: "#27272a",
+    borderRadius: "9999px",
+    height: "6px",
+    overflow: "hidden",
+    width: "100%",
+  },
+  rating: {
+    fontWeight: "500",
+  },
 };
 </script>
 
 <template>
-  <div v-if="strength" class="pg:flex pg:flex-col pg:gap-1.5">
-    <div class="pg:flex pg:items-center pg:justify-between pg:text-xs">
-      <span class="pg:text-muted-foreground">Strength</span>
-      <span :style="{ color: getStrengthColor(strength.score) }">
+  <div v-if="strength" :style="styles.container">
+    <div :style="styles.header">
+      <span :style="styles.label">Strength</span>
+      <span
+        :style="{ ...styles.rating, color: getStrengthColor(strength.score) }"
+      >
         {{ strength.rating }}
       </span>
     </div>
-    <div
-      class="pg:h-1.5 pg:w-full pg:overflow-hidden pg:rounded-full pg:bg-muted"
-    >
+    <div :style="styles.progressTrack">
       <div
-        class="pg:h-full pg:rounded-full pg:transition-all pg:duration-300"
         :style="{
+          ...styles.progressBar,
           width: `${strength.percentage}%`,
           backgroundColor: getStrengthColor(strength.score),
         }"
       />
     </div>
-    <div class="pg:text-xs pg:text-muted-foreground">
-      Crack time: {{ strength.cracktime }}
-    </div>
+    <div :style="styles.crackTime">Crack time: {{ strength.cracktime }}</div>
   </div>
 </template>
