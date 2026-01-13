@@ -1,4 +1,3 @@
-import tailwindcss from "@tailwindcss/vite";
 import { resolve } from "node:path";
 import { defineConfig } from "wxt";
 
@@ -12,7 +11,6 @@ export default defineConfig({
   modules: ["@wxt-dev/module-vue"],
   srcDir: "src",
   vite: () => ({
-    plugins: [tailwindcss()],
     resolve: {
       alias: {
         "@": resolve(__dirname, "src"),
