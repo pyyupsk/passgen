@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const openRepo = () => {
-  window.open("https://github.com/pyyupsk/passgen", "_blank");
+  window.open("https://github.com/pyyupsk/passgen", "_blank", "noopener");
 };
 </script>
 
