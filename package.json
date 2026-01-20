@@ -37,7 +37,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
-    "@pyyupsk/vite-plugin-sitemap": "0.2.2",
+    "@pyyupsk/vite-plugin-sitemap": "0.2.3",
     "@tailwindcss/vite": "^4.1.18",
     "@vueuse/core": "^14.1.0",
     "@zxcvbn-ts/core": "^3.0.4",
