@@ -35,10 +35,6 @@ jobs:
         run: bun install --frozen-lockfile
         working-directory: extension
 
-      - name: Build
-        run: bun run build
-        working-directory: extension
-
       - name: Bump version
         id: version
         working-directory: extension
@@ -49,15 +45,29 @@ jobs:
           NEW_VERSION=$(node -p "require('./package.json').version")
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: Build Chrome extension
+        run: bun run zip
+        working-directory: extension
+
+      - name: Build Firefox extension
+        run: bun run zip:firefox
+        working-directory: extension
+
       - name: Generate CHANGELOG
         working-directory: extension
         env:
           NEW_VERSION: ${{ steps.version.outputs.new_version }}
         run: bunx git-cliff --tag "v$NEW_VERSION" -o CHANGELOG.md
 
+      - name: Generate release notes
+        working-directory: extension
+        env:
+          NEW_VERSION: ${{ steps.version.outputs.new_version }}
+        run: bunx git-cliff --tag "v$NEW_VERSION" --unreleased --strip header -o RELEASE_NOTES.md
+
       - name: Format CHANGELOG
         working-directory: extension
-        run: bunx markdownlint-cli2 --fix "CHANGELOG.md" || true
+        run: bunx markdownlint-cli2 --fix "CHANGELOG.md" "RELEASE_NOTES.md" || true
 
       - name: Commit and push changes
         env:
@@ -81,4 +91,15 @@ jobs:
         run: |
           gh release create "extension-v$NEW_VERSION" \
             --title "Extension v$NEW_VERSION" \
-            --notes-file extension/CHANGELOG.md
+            --notes-file extension/RELEASE_NOTES.md \
+            extension/.output/*-chrome.zip \
+            extension/.output/*-firefox.zip
+
+      - name: Upload to Firefox Add-ons
+        uses: wdzeng/firefox-addon@b78a4d0148897b072ef18aff65a6bd793e8109be # v1.2.0
+        with:
+          addon-guid: ${{ secrets.FIREFOX_ADDON_GUID }}
+          xpi-path: extension/.output/*-firefox.zip
+          source-file-path: extension/.output/*-sources.zip
+          jwt-issuer: ${{ secrets.FIREFOX_JWT_ISSUER }}
+          jwt-secret: ${{ secrets.FIREFOX_JWT_SECRET }}
