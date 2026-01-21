@@ -14,6 +14,9 @@ let popupListenerTimer: null | ReturnType<typeof setTimeout> = null;
 // WeakMap to store the latest PasswordField for each input element
 const fieldMap = new WeakMap<HTMLInputElement, PasswordField>();
 
+// WeakSet to track inputs with attached listeners
+const attachedInputs = new WeakSet<HTMLInputElement>();
+
 const showPopup = (field: PasswordField): void => {
   // Don't reopen if already showing for this field
   if (activeField === field && activePopup) return;
@@ -159,9 +162,9 @@ const setInputValue = (input: HTMLInputElement, value: string): void => {
 };
 
 const attachFieldListener = (input: HTMLInputElement): void => {
-  // Mark as processed to avoid duplicate listeners
-  if (input.dataset.passgenAttached) return;
-  input.dataset.passgenAttached = "true";
+  // Skip if already processed
+  if (attachedInputs.has(input)) return;
+  attachedInputs.add(input);
 
   input.addEventListener("focus", () => {
     // Look up the latest PasswordField from the WeakMap
